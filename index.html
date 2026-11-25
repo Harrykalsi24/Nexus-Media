@@ -1,0 +1,3401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Nexus Review AI — Next-Gen Customer Intelligence & Feedback Kiosks</title>
+  <meta name="description" content="Transform in-store customer experiences into verified 5-star reviews, real-time sentiment analytics, and unstoppable brand growth with AI-powered feedback kiosks.">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="shortcut icon" href="./assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  </script>
+
+  <style>
+    /* Exact shades & fluid physics sampled directly from reference image & SmoothUI */
+    :root {
+      --bg-sky-top: #658cc7;
+      --bg-sky-mid: #788ecf;
+      --bg-sky-sunset: #d5c4e0;
+      --bg-desert: #465384;
+      --dark-navy: #121320;
+      --deep-indigo: #262442;
+      --pill-white: rgba(240, 244, 255, 0.82);
+      --pill-white-hover: rgba(248, 250, 255, 0.96);
+      --pill-border: rgba(255, 255, 255, 0.88);
+      --pill-border-subtle: rgba(255, 255, 255, 0.55);
+      --pill-shadow: 0 20px 48px -10px rgba(22, 28, 64, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.75) inset;
+      --pill-shadow-elevated: 0 28px 60px -12px rgba(20, 26, 60, 0.25), 0 0 0 1.5px rgba(255, 255, 255, 0.9) inset;
+      --dark-pill: #262442;
+      --dark-pill-hover: #1b1933;
+      --text-main: #14141e;
+      --text-muted: #5e668c;
+      --text-light: #7e87b0;
+      --warm-glow: #e08f5a;
+      --warm-accent: #dfa26c;
+      --warm-gold: #ffbe7b;
+      --accent-blue: #5b7be0;
+      --neon-cyan: #4ef2d2;
+      --radius-pill: 9999px;
+      --radius-card: 36px;
+      --radius-sm: 20px;
+      
+      /* SmoothUI Spring & Physics Curves */
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-soft: cubic-bezier(0.25, 1, 0.5, 1);
+      
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-sky-top: #0b0d18;
+      --bg-sky-mid: #14162a;
+      --bg-sky-sunset: #2a223a;
+      --bg-desert: #141626;
+      --pill-white: rgba(28, 29, 52, 0.84);
+      --pill-white-hover: rgba(36, 38, 68, 0.95);
+      --pill-border: rgba(255, 255, 255, 0.16);
+      --pill-border-subtle: rgba(255, 255, 255, 0.08);
+      --pill-shadow: 0 22px 48px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+      --pill-shadow-elevated: 0 30px 62px -10px rgba(0, 0, 0, 0.85), 0 0 0 1.5px rgba(255, 255, 255, 0.22) inset;
+      --dark-pill: #dfa26c;
+      --dark-pill-hover: #e8b07d;
+      --text-main: #f2f4ff;
+      --text-muted: #9aa1c8;
+      --text-light: #787fa6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-main);
+      background-color: var(--dark-navy);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Ambient Scenic Background (Twilight Desert Horizon + Curved Villa Architecture) */
+    .viewport-canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .ambient-sky-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, 
+        var(--bg-sky-top) 0%, 
+        var(--bg-sky-mid) 42%, 
+        var(--bg-sky-sunset) 72%, 
+        var(--bg-desert) 100%
+      );
+      transition: background 0.8s ease;
+    }
+
+    /* Interactive Twilight Canvas for stars and floating dust particles */
+    #ambientCanvas {
+      position: absolute;
+      inset: 0;
+      opacity: 0.85;
+    }
+
+    /* Architectural Glowing Horizon Silhouette */
+    .architectural-backdrop {
+      position: absolute;
+      bottom: -60px;
+      right: -80px;
+      width: 65vw;
+      max-width: 950px;
+      height: 60vh;
+      max-height: 580px;
+      background: radial-gradient(circle at 65% 55%, rgba(224, 143, 90, 0.5) 0%, rgba(255, 158, 84, 0.2) 35%, transparent 70%);
+      filter: blur(45px);
+      pointer-events: none;
+      animation: pulseGlow 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1) translate(0, 0); opacity: 0.75; }
+      100% { transform: scale(1.08) translate(-15px, -10px); opacity: 0.98; }
+    }
+
+    /* Architectural Curved Capsule Silhouette overlay matching image */
+    .villa-silhouette {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 62vw;
+      min-width: 540px;
+      height: 540px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" fill="none"><defs><linearGradient id="warmLight" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23ffc885" stop-opacity="0.95"/><stop offset="50%" stop-color="%23e08f5a" stop-opacity="0.85"/><stop offset="100%" stop-color="%239e4420" stop-opacity="0.75"/></linearGradient><linearGradient id="glassReflection" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.3"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0.05"/></linearGradient><filter id="glowBlur"><feGaussianBlur stdDeviation="8" result="glow"/></filter></defs><path d="M190 280C190 170 320 100 520 100C740 100 960 160 980 260C995 330 940 400 840 410C700 425 600 435 500 440C330 450 190 390 190 280Z" stroke="rgba(255,255,255,0.7)" stroke-width="24" fill="rgba(240,244,255,0.08)"/><path d="M220 280C220 190 330 135 510 135C690 135 910 185 930 270C945 325 890 380 800 390C675 400 575 410 485 415C335 425 220 370 220 280Z" stroke="url(%23warmLight)" stroke-width="9" fill="rgba(224,143,90,0.14)" filter="drop-shadow(0 0 30px rgba(224,143,90,0.7))"/><rect x="340" y="210" width="390" height="170" rx="42" fill="rgba(224,143,90,0.22)" stroke="url(%23warmLight)" stroke-width="5"/><path d="M380 320 Q480 300 680 320" stroke="rgba(255,240,210,0.75)" stroke-width="6" stroke-linecap="round"/><circle cx="530" cy="285" r="50" fill="rgba(255,225,180,0.3)" filter="blur(16px)"/></svg>') no-repeat bottom right;
+      background-size: contain;
+      opacity: 0.92;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Overall Layout Wrapper */
+    .app-root {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Floating Capsule Dock (Left Sidebar inspired by image) */
+    .floating-sidebar-dock {
+      position: fixed;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 12px;
+      background: var(--pill-white);
+      backdrop-filter: blur(34px) saturate(180%);
+      -webkit-backdrop-filter: blur(34px) saturate(180%);
+      border: 1.2px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--pill-shadow-elevated);
+      z-index: 100;
+      transition: all 0.35s var(--ease-spring);
+    }
+
+    .dock-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      position: relative;
+      transition: 
+        transform 0.28s var(--ease-bounce),
+        background-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.25s ease;
+      text-decoration: none;
+    }
+
+    .dock-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.85);
+      transform: scale(1.18);
+    }
+
+    .dock-btn:active {
+      transform: scale(0.92);
+    }
+
+    .dock-btn.active {
+      background: var(--dark-pill);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(38, 36, 66, 0.32);
+    }
+
+    [data-theme="dark"] .dock-btn.active {
+      background: var(--warm-accent);
+      color: #0b0c16;
+      box-shadow: 0 8px 22px rgba(223, 162, 108, 0.4);
+    }
+
+    .dock-divider {
+      width: 22px;
+      height: 1px;
+      background: var(--pill-border-subtle);
+      margin: 4px 0;
+    }
+
+    .dock-tooltip {
+      position: absolute;
+      left: calc(100% + 14px);
+      top: 50%;
+      transform: translateY(-50%) translateX(-8px);
+      padding: 6px 12px;
+      background: var(--dark-navy);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 12px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.25s var(--ease-spring);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .dock-btn:hover .dock-tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    /* Main Content Area */
+    .main-viewport {
+      margin-left: 92px;
+      flex: 1;
+      min-width: 0;
+      padding: 24px 36px 80px 36px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Apple Dynamic Island / Navbar: Generous Dimensions & Smooth Hide/Reappear */
+    .floating-top-bar {
+      position: sticky;
+      top: 20px;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      gap: 16px;
+      padding: 8px 10px 8px 24px;
+      background: var(--pill-white);
+      backdrop-filter: blur(34px) saturate(180%);
+      -webkit-backdrop-filter: blur(34px) saturate(180%);
+      border: 1.2px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--pill-shadow);
+      max-width: 1200px;
+      margin: 0 auto 36px auto;
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      filter: blur(0px);
+      will-change: transform, opacity, filter;
+      transition: 
+        transform 0.45s var(--ease-spring),
+        opacity 0.38s var(--ease-spring),
+        filter 0.38s ease,
+        box-shadow 0.3s ease;
+    }
+
+    .floating-top-bar.nav-hidden {
+      transform: translateY(-135%) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      filter: blur(8px);
+    }
+
+    /* SmoothUI Scroll Reveal System */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(32px) scale(0.98);
+      filter: blur(6px);
+      transition: 
+        opacity 0.75s var(--ease-spring),
+        transform 0.75s var(--ease-spring),
+        filter 0.6s ease;
+      will-change: opacity, transform, filter;
+    }
+
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0px);
+    }
+
+    .reveal-on-scroll[data-delay="1"] { transition-delay: 0.08s; }
+    .reveal-on-scroll[data-delay="2"] { transition-delay: 0.16s; }
+    .reveal-on-scroll[data-delay="3"] { transition-delay: 0.24s; }
+    .reveal-on-scroll[data-delay="4"] { transition-delay: 0.32s; }
+    .reveal-on-scroll[data-delay="5"] { transition-delay: 0.40s; }
+    .reveal-on-scroll[data-delay="6"] { transition-delay: 0.48s; }
+
+    /* SmoothUI Micro-Interactions */
+    .btn-pill-dark, .btn-pill-subtle, .oasis-view-details-btn, .generate-ai-trigger-btn {
+      position: relative;
+      overflow: hidden;
+      transition: 
+        transform 0.3s var(--ease-spring),
+        box-shadow 0.3s var(--ease-spring),
+        background-color 0.25s ease,
+        color 0.25s ease;
+    }
+
+    .btn-pill-dark:hover, .oasis-view-details-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 34px rgba(38, 36, 66, 0.35);
+    }
+
+    .btn-pill-dark:active, .oasis-view-details-btn:active {
+      transform: translateY(-1px) scale(0.99);
+    }
+
+    .btn-pill-subtle:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(32, 40, 84, 0.12);
+    }
+
+    .btn-pill-dark i, .btn-pill-subtle i, .oasis-view-details-btn i {
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .btn-pill-dark:hover i[data-lucide*="arrow"], 
+    .oasis-view-details-btn:hover i[data-lucide*="arrow"],
+    .service-cta-link:hover i[data-lucide*="arrow"] {
+      transform: translateX(4px);
+    }
+
+    /* Subtle shimmer reflection on CTA hover */
+    .btn-pill-dark::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.22),
+        transparent
+      );
+      transform: rotate(25deg);
+      transition: all 0.65s var(--ease-spring);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn-pill-dark:hover::after {
+      left: 130%;
+      opacity: 1;
+    }
+
+    /* Card hover spring physics */
+    .service-pill-card, .testimonial-card-pill, .pricing-tier-card, .advantage-column-card {
+      transition: 
+        transform 0.45s var(--ease-spring),
+        box-shadow 0.45s var(--ease-spring),
+        border-color 0.3s ease;
+    }
+
+    .service-pill-card:hover, .testimonial-card-pill:hover, .pricing-tier-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: var(--pill-shadow-elevated);
+      border-color: rgba(255, 255, 255, 1);
+    }
+
+    /* Website Logo: Interactive Spring & Heartbeat Hover Animation */
+    .brand-pill-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-main);
+      padding: 3px 6px 3px 3px;
+      border-radius: var(--radius-pill);
+      position: relative;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .brand-icon-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--warm-accent), var(--warm-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(223, 162, 108, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: 
+        transform 0.4s var(--ease-bounce),
+        box-shadow 0.4s var(--ease-spring);
+    }
+
+    .brand-icon-logo i {
+      transition: transform 0.35s var(--ease-spring);
+    }
+
+    /* Logo Hover State Animation */
+    .brand-pill-group:hover .brand-icon-logo {
+      transform: scale(1.16) rotate(-10deg);
+      box-shadow: 
+        0 6px 20px rgba(223, 162, 108, 0.65),
+        0 0 0 2.5px rgba(255, 255, 255, 0.9);
+    }
+
+    .brand-pill-group:hover .brand-icon-logo i {
+      animation: logoHeartBeat 1.1s ease-in-out infinite;
+    }
+
+    @keyframes logoHeartBeat {
+      0%, 100% { transform: scale(1.1); }
+      25% { transform: scale(1.3) rotate(5deg); }
+      45% { transform: scale(1.08); }
+      65% { transform: scale(1.24) rotate(-3deg); }
+      85% { transform: scale(1.1); }
+    }
+
+    /* Shimmer sweep on logo hover */
+    .brand-icon-logo::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -80%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.65),
+        transparent
+      );
+      transform: rotate(25deg);
+      transition: all 0.6s var(--ease-spring);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .brand-pill-group:hover .brand-icon-logo::after {
+      left: 140%;
+      opacity: 1;
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .brand-pill-group:hover .brand-name {
+      transform: translateX(2px);
+    }
+
+    .brand-name span {
+      color: var(--warm-accent);
+      display: inline-block;
+      transition: transform 0.3s var(--ease-bounce), color 0.3s ease;
+    }
+
+    .brand-pill-group:hover .brand-name span {
+      transform: scale(1.12);
+      color: #ff9142;
+    }
+
+    /* Top Filter Segments: Aligned in single line without line breaks */
+    .top-filter-segments {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.04);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      flex-shrink: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .top-filter-segments::-webkit-scrollbar {
+      display: none;
+    }
+
+    [data-theme="dark"] .top-filter-segments {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .filter-item {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      flex-shrink: 0;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .filter-item:hover, .filter-item.active {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    [data-theme="dark"] .filter-item:hover, [data-theme="dark"] .filter-item.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .top-action-pills {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    /* Action Buttons */
+    .btn-pill-subtle {
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--pill-border-subtle);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .btn-pill-subtle:hover {
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-pill-dark {
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--dark-pill);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      flex-shrink: 0;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(33, 32, 56, 0.25);
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .btn-pill-dark:hover {
+      background: var(--dark-pill-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(33, 32, 56, 0.35);
+    }
+
+    [data-theme="dark"] .btn-pill-dark {
+      color: #0d0e19;
+      background: var(--warm-accent);
+      box-shadow: 0 8px 24px rgba(255, 126, 54, 0.35);
+    }
+
+    /* HERO SECTION with Image Layout Fidelity */
+    .hero-grid-showcase {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+      min-height: calc(85vh - 120px);
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 0 60px 0;
+      position: relative;
+    }
+
+    .hero-editorial-left {
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero-eyebrow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--pill-border);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow-pill .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--warm-accent);
+      box-shadow: 0 0 10px var(--warm-accent);
+      animation: blinkPulse 2s infinite;
+    }
+
+    @keyframes blinkPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .hero-title-giant {
+      font-family: var(--font-display);
+      font-size: clamp(44px, 5.2vw, 68px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      color: #ffffff;
+      text-shadow: 0 3px 20px rgba(18, 22, 54, 0.35);
+      margin-bottom: 20px;
+    }
+
+    .hero-title-giant .gradient-word {
+      background: linear-gradient(135deg, #ffffff 40%, var(--warm-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle-lead {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+      max-width: 500px;
+      margin-bottom: 36px;
+    }
+
+    /* Floating Capsule Search & Stats Card (Bottom-Left from inspiration) */
+    .floating-interactive-search-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: var(--radius-card);
+      padding: 24px 28px;
+      box-shadow: var(--pill-shadow-elevated);
+      max-width: 480px;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      animation: floatSubtle 6s ease-in-out infinite alternate;
+    }
+
+    .floating-interactive-search-card:hover {
+      transform: translateY(-4px);
+    }
+
+    @keyframes floatSubtle {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .card-title-bold {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    .interactive-input-pill {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-pill);
+      padding: 6px 8px 6px 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) inset;
+      margin-bottom: 18px;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .interactive-input-pill {
+      background: rgba(20, 22, 42, 0.7);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .interactive-input-pill:focus-within {
+      border-color: var(--warm-accent);
+      box-shadow: 0 0 0 3px rgba(255, 126, 54, 0.2);
+    }
+
+    .interactive-input-pill input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      font-family: var(--font-body);
+      color: var(--text-main);
+      padding-right: 8px;
+    }
+
+    .interactive-input-pill button {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--dark-pill);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .interactive-input-pill button:hover {
+      transform: scale(1.08);
+      background: var(--warm-accent);
+    }
+
+    .social-proof-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar-stack-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar-stack-group img, .avatar-pill-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2.5px solid #fff;
+      margin-left: -10px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    }
+
+    .avatar-stack-group .avatar-pill-thumb:first-child {
+      margin-left: 0;
+    }
+
+    .proof-numbers-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .proof-counter {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+
+    .proof-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Floating Hero Right Card (Lunar Oasis style inspiration) */
+    .hero-floating-right-container {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 480px;
+    }
+
+    .floating-oasis-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(34px);
+      -webkit-backdrop-filter: blur(34px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: var(--radius-card);
+      padding: 30px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: var(--pill-shadow-elevated);
+      animation: floatSlowOpposite 7s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 10;
+    }
+
+    @keyframes floatSlowOpposite {
+      0% { transform: translateY(-4px); }
+      100% { transform: translateY(6px); }
+    }
+
+    .oasis-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .oasis-kiosk-name {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .oasis-icon-arrow-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--pill-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: all 0.25s ease;
+    }
+
+    .oasis-icon-arrow-btn:hover {
+      background: var(--warm-accent);
+      color: #fff;
+      transform: rotate(45deg);
+    }
+
+    .oasis-location-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .kiosk-spec-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    [data-theme="dark"] .kiosk-spec-metrics-grid {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .spec-metric-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .spec-metric-item i {
+      color: var(--warm-accent);
+      margin-bottom: 2px;
+    }
+
+    .spec-metric-val {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .spec-metric-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .oasis-view-details-btn {
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: var(--radius-pill);
+      background: var(--dark-pill);
+      color: #ffffff;
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-body);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(33, 32, 56, 0.3);
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .oasis-view-details-btn:hover {
+      background: var(--warm-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(255, 126, 54, 0.4);
+    }
+
+    /* SECTIONS COMMON CONTAINER */
+    .content-section {
+      max-width: 1240px;
+      margin: 80px auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section-header-centered {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 54px auto;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: var(--pill-white);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--pill-border);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 3.8vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* GENERATIVE UI: LIVE AI REVIEW SYNTHESIZER DEMO */
+    .interactive-simulator-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(34px);
+      -webkit-backdrop-filter: blur(34px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 36px;
+      padding: 40px;
+      box-shadow: var(--pill-shadow-elevated);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .sim-controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sim-panel-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .star-rating-picker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 28px;
+      color: #d1d5db;
+      transition: all 0.2s ease;
+    }
+
+    .star-btn.active, .star-btn:hover {
+      color: #f59e0b;
+      transform: scale(1.15);
+    }
+
+    .chips-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .vibe-chip {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    [data-theme="dark"] .vibe-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .vibe-chip.selected {
+      background: var(--dark-pill);
+      color: #fff;
+      border-color: var(--dark-pill);
+    }
+
+    [data-theme="dark"] .vibe-chip.selected {
+      background: var(--warm-accent);
+      color: #121324;
+      border-color: var(--warm-accent);
+    }
+
+    .tone-selector-pills {
+      display: flex;
+      gap: 8px;
+      background: rgba(0,0,0,0.03);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+    }
+
+    .tone-pill {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tone-pill.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    [data-theme="dark"] .tone-pill.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .generate-ai-trigger-btn {
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--warm-accent), #f7681f);
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255, 126, 54, 0.4);
+      transition: all 0.25s ease;
+    }
+
+    .generate-ai-trigger-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(255, 126, 54, 0.55);
+    }
+
+    /* Live AI Generated Preview */
+    .sim-output-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--pill-border);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    [data-theme="dark"] .sim-output-card {
+      background: rgba(18, 20, 40, 0.7);
+    }
+
+    .review-channel-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      padding-bottom: 12px;
+    }
+
+    [data-theme="dark"] .review-channel-tabs {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .channel-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .channel-tab.active {
+      color: var(--text-main);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] .channel-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .generated-review-bubble {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text-main);
+      position: relative;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+      min-height: 120px;
+    }
+
+    [data-theme="dark"] .generated-review-bubble {
+      background: rgba(25, 28, 55, 0.85);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sentiment-ai-meter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      background: rgba(78, 242, 210, 0.1);
+      border: 1px solid rgba(78, 242, 210, 0.3);
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .sentiment-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0d9488;
+    }
+
+    [data-theme="dark"] .sentiment-badge-tag {
+      color: #4ef2d2;
+    }
+
+    /* SERVICES GRID SECTION */
+    .services-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    .service-pill-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: var(--radius-card);
+      padding: 36px 32px;
+      box-shadow: var(--pill-shadow);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .service-pill-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--pill-shadow-elevated);
+      border-color: rgba(255, 255, 255, 1);
+    }
+
+    .service-card-top {
+      margin-bottom: 24px;
+    }
+
+    .service-icon-capsule {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--pill-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--warm-accent);
+      margin-bottom: 22px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s ease;
+    }
+
+    .service-pill-card:hover .service-icon-capsule {
+      transform: scale(1.1) rotate(5deg);
+      background: var(--warm-accent);
+      color: #fff;
+    }
+
+    .service-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .service-desc {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    .service-feature-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .service-feature-bullets li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .service-feature-bullets li i {
+      color: var(--warm-accent);
+      flex-shrink: 0;
+    }
+
+    .service-cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--warm-accent);
+      text-decoration: none;
+      transition: gap 0.2s ease;
+    }
+
+    .service-cta-link:hover {
+      gap: 12px;
+    }
+
+    /* DUAL ADVANTAGES COMPARISON MATRIX */
+    .advantages-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .advantage-column-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(28px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 36px;
+      padding: 40px;
+      box-shadow: var(--pill-shadow);
+      position: relative;
+    }
+
+    .advantage-header-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--pill-border-subtle);
+    }
+
+    .advantage-badge-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: var(--dark-pill);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    [data-theme="dark"] .advantage-badge-icon {
+      background: var(--warm-accent);
+      color: #121324;
+    }
+
+    .advantage-col-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .advantage-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .advantage-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .adv-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 126, 54, 0.12);
+      color: var(--warm-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .adv-text h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .adv-text p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    /* INTERACTIVE ROI CALCULATOR */
+    .roi-calculator-container {
+      background: var(--pill-white);
+      backdrop-filter: blur(34px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 36px;
+      padding: 44px;
+      box-shadow: var(--pill-shadow-elevated);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .roi-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .roi-slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .roi-val-badge {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--warm-accent);
+      background: rgba(255, 126, 54, 0.1);
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+    }
+
+    .styled-range-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      outline: none;
+    }
+
+    [data-theme="dark"] .styled-range-input {
+      background: #2a2e4a;
+    }
+
+    .styled-range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--warm-accent);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 126, 54, 0.5);
+      border: 2px solid #fff;
+    }
+
+    .roi-output-preview {
+      background: var(--dark-pill);
+      color: #fff;
+      border-radius: 28px;
+      padding: 34px;
+      box-shadow: 0 16px 40px rgba(20, 22, 45, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .roi-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .roi-stat-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .roi-stat-title {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .roi-stat-big {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--warm-gold);
+    }
+
+    /* TESTIMONIALS / PROOF WALL */
+    .testimonials-floating-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial-card-pill {
+      background: var(--pill-white);
+      backdrop-filter: blur(28px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--pill-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform 0.25s ease;
+    }
+
+    .testimonial-card-pill:hover {
+      transform: translateY(-6px);
+    }
+
+    .testimonial-author-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .author-info h5 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .author-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* PRICING PLANS */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .pricing-tier-card {
+      background: var(--pill-white);
+      backdrop-filter: blur(28px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 32px;
+      padding: 38px 30px;
+      box-shadow: var(--pill-shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .pricing-tier-card.featured {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: var(--warm-accent);
+      transform: scale(1.04);
+      box-shadow: var(--pill-shadow-elevated), 0 0 35px rgba(255, 126, 54, 0.2);
+    }
+
+    [data-theme="dark"] .pricing-tier-card.featured {
+      background: rgba(30, 32, 60, 0.95);
+    }
+
+    .popular-ribbon {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--warm-accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 4px 12px rgba(255, 126, 54, 0.4);
+    }
+
+    .plan-name {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .plan-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 18px 0;
+    }
+
+    .plan-price {
+      font-family: var(--font-display);
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+    }
+
+    .plan-period {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* FOOTER */
+    .futuristic-footer {
+      background: var(--pill-white);
+      backdrop-filter: blur(30px);
+      border: 1.5px solid var(--pill-border);
+      border-radius: 40px;
+      padding: 48px;
+      margin-top: 100px;
+      box-shadow: var(--pill-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .footer-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--pill-border-subtle);
+    }
+
+    .footer-links-row {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-links-row a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links-row a:hover {
+      color: var(--warm-accent);
+    }
+
+    .footer-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* RESPONSIVENESS */
+    @media (max-width: 1080px) {
+      .hero-grid-showcase {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+      .hero-floating-right-container {
+        justify-content: center;
+      }
+      .interactive-simulator-card, .roi-calculator-container, .advantages-split-grid {
+        grid-template-columns: 1fr;
+      }
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .pricing-tier-card.featured {
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .floating-sidebar-dock {
+        position: fixed;
+        bottom: 16px;
+        top: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        padding: 10px 18px;
+        border-radius: var(--radius-pill);
+      }
+      .dock-tooltip {
+        display: none;
+      }
+      .dock-divider {
+        width: 1px;
+        height: 20px;
+        margin: 0 4px;
+      }
+      .main-viewport {
+        margin-left: 0;
+        padding: 16px 16px 100px 16px;
+      }
+      .floating-top-bar {
+        padding: 8px 14px;
+      }
+      .top-filter-segments {
+        display: none;
+      }
+      .hero-title-giant {
+        font-size: 38px;
+      }
+    }
+
+    /* ══ Eye tracker ═══════════════════════════════════════════
+       See lab/Watcher.tsx. The frame holds the largest ball the
+       Size knob allows, so the wall never rescales it. */
+    .eyt {
+      /* Bencho Design Tokens Mapped to Project's Design Tokens */
+      --bg: var(--bg-sky-mid);
+      --card: var(--pill-white);
+      --fill-slab: var(--pill-white);
+      --fill-on: var(--text-main);
+      --font-ui: var(--font-body);
+      --ink: var(--text-main);
+
+      width: 200px;
+      height: 200px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    [data-theme="dark"] .eyt {
+      --fill-slab: rgba(36, 38, 68, 0.95);
+      --fill-on: #f2f4ff;
+    }
+
+    .eyt-ball {
+      width: var(--eyt-size, 100px);
+      height: var(--eyt-size, 100px);
+      overflow: visible;
+    }
+
+    /* the ball is the Fill's own slab and the eyes its ink: white
+       with dark eyes on a light fill, near-black with light eyes on
+       a dark one */
+    .eyt-body { fill: var(--fill-slab, #ffffff); }
+
+    .eyt-eye { fill: var(--fill-on, #0b0b0d); }
+
+    /* a press on the toy opens a chat bubble off its lower right: the
+       pet's bubble, its square corner pointing back at the face */
+    .eyt { position: relative; }
+
+    /* a press gives a little under the finger and springs back out */
+    .eyt-ball[data-poke] {
+      cursor: pointer;
+      transform-origin: center;
+      transition: scale 420ms cubic-bezier(0.24, 1.34, 0.38, 1);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .eyt-ball[data-poke]:active { scale: 0.96; transition-duration: 160ms; transition-timing-function: ease; }
+
+    .eyt-say {
+      position: absolute;
+      left: calc(50% + var(--eyt-size, 100px) * 0.36);
+      top: calc(50% + var(--eyt-size, 100px) * 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-height: 34px;
+      padding: 0 16px;
+      border-radius: 6px 14px 14px 14px;
+      background: var(--tint, #3b5bff);
+      box-shadow: inset 0 -1.5px 0 rgba(0, 0, 0, 0.1);
+      color: #ffffff;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 400;
+      white-space: nowrap;
+      transform-origin: top left;
+      opacity: 0;
+      scale: 0.85;
+      pointer-events: none;
+      transition: opacity 160ms ease, scale 220ms cubic-bezier(0.24, 1.34, 0.38, 1), background-color 220ms ease;
+      letter-spacing: 0em;
+      z-index: 10;
+    }
+
+    .eyt-say[data-on] { opacity: 1; scale: 1; }
+
+    .eyt-caret {
+      width: 1.5px;
+      height: 13px;
+      border-radius: 1px;
+      background: var(--fill-slab, var(--card));
+      animation: pet-caret 1s steps(1) infinite;
+    }
+
+    .logo-test .eyt { width: auto; height: auto; }
+
+    .logo-test .eyt-body { fill: var(--ink); }
+
+    .logo-test .eyt-eye { fill: var(--bg); }
+
+    /* the circle and pill in dark mode match the hexagon: a lifted
+       dark body with the eyes kept white */
+    [data-theme="dark"] .logo-test .eyt-body { fill: #2b2c30; /* the hexagon's body; site chrome, not a block: keep off the system snap */ }
+
+    [data-theme="dark"] .logo-test .eyt-eye { fill: #fbfbfa; }
+
+    .bench-lock-face .eyt { position: relative; width: 96px; height: 96px; }
+
+    .bench-lock-face .eyt-body { fill: transparent; }
+
+    .bench-lock-face .eyt-eye { fill: #fff; }
+
+    @keyframes pet-caret {
+      50% { opacity: 0; }
+    }
+
+    /* Hero Companion Integration Styling */
+    .hero-companion-pill-dock {
+      position: absolute;
+      top: -72px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--pill-white);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1.2px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      padding: 6px 18px 6px 8px;
+      box-shadow: var(--pill-shadow);
+      z-index: 15;
+      animation: floatSubtle 7s ease-in-out infinite alternate;
+    }
+
+    .hero-companion-pill-dock .eyt {
+      width: 54px;
+      height: 54px;
+    }
+
+    .hero-companion-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-companion-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-companion-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hero-companion-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      display: inline-block;
+    }
+
+    /* MagicUI Animated Theme Toggler with View Transition API */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+
+    ::view-transition-new(root) {
+      z-index: 9999;
+    }
+
+    .animated-theme-toggler-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: transform 0.28s var(--ease-bounce);
+      overflow: hidden;
+    }
+
+    .animated-theme-toggler-btn:hover {
+      transform: scale(1.15);
+      color: var(--text-main);
+    }
+
+    .animated-theme-toggler-btn:active {
+      transform: scale(0.92);
+    }
+
+    .theme-icon-sun, .theme-icon-moon {
+      transition: transform 0.4s var(--ease-spring), opacity 0.3s ease;
+      position: absolute;
+    }
+
+    [data-theme="dark"] .theme-icon-sun {
+      transform: rotate(90deg) scale(0);
+      opacity: 0;
+    }
+
+    [data-theme="dark"] .theme-icon-moon {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+      color: var(--warm-gold);
+    }
+
+    [data-theme="light"] .theme-icon-sun, body:not([data-theme="dark"]) .theme-icon-sun {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+      color: var(--warm-accent);
+    }
+
+    [data-theme="light"] .theme-icon-moon, body:not([data-theme="dark"]) .theme-icon-moon {
+      transform: rotate(-90deg) scale(0);
+      opacity: 0;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <!-- Ambient Sky & Canvas Background -->
+  <div class="viewport-canvas-container">
+    <div class="ambient-sky-gradient"></div>
+    <canvas id="ambientCanvas"></canvas>
+    <div class="architectural-backdrop"></div>
+    <div class="villa-silhouette"></div>
+  </div>
+
+  <div class="app-root">
+
+    <!-- Floating Capsule Dock (Left Sidebar inspired by image) -->
+    <nav class="floating-sidebar-dock" aria-label="Main Navigation">
+      <a href="#hero" class="dock-btn active" title="Home">
+        <i data-lucide="home" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">Overview</span>
+      </a>
+      <a href="#simulator" class="dock-btn" title="AI Review Simulator">
+        <i data-lucide="sparkles" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">AI Simulator</span>
+      </a>
+      <a href="#services" class="dock-btn" title="Services">
+        <i data-lucide="layers" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">Services</span>
+      </a>
+      <a href="#advantages" class="dock-btn" title="Advantages">
+        <i data-lucide="shield-check" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">Advantages</span>
+      </a>
+      <a href="#calculator" class="dock-btn" title="ROI Calculator">
+        <i data-lucide="calculator" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">ROI Engine</span>
+      </a>
+      <a href="#pricing" class="dock-btn" title="Pricing">
+        <i data-lucide="credit-card" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">Kiosk Plans</span>
+      </a>
+      <div class="dock-divider"></div>
+      <button class="dock-btn animated-theme-toggler-btn" id="themeToggleBtn" onclick="triggerAnimatedThemeToggle(event)" title="Toggle Sunset / Midnight View" aria-label="Toggle Sunset / Midnight View">
+        <i data-lucide="sun" class="theme-icon-sun" style="width:20px;height:20px;"></i>
+        <i data-lucide="moon" class="theme-icon-moon" style="width:20px;height:20px;"></i>
+        <span class="dock-tooltip">Toggle Theme</span>
+      </button>
+    </nav>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+
+      <!-- Floating Capsule Top Navigation Bar (Filters & Quick Actions) -->
+      <header class="floating-top-bar">
+        <a href="#hero" class="brand-pill-group">
+          <div class="brand-icon-logo">
+            <i data-lucide="message-square-heart" style="width:20px;height:20px;"></i>
+          </div>
+          <span class="brand-name">Review<span>AI</span></span>
+        </a>
+
+        <!-- Segmented filter pills matching screenshot ("Location", "Property Type", etc.) -->
+        <div class="top-filter-segments">
+          <button class="filter-item active" onclick="setIndustryFilter('retail', this)">
+            <i data-lucide="shopping-bag" style="width:14px;height:14px;"></i>
+            Retail & Electronics
+          </button>
+          <button class="filter-item" onclick="setIndustryFilter('hospitality', this)">
+            <i data-lucide="coffee" style="width:14px;height:14px;"></i>
+            Dining & Hotels
+          </button>
+          <button class="filter-item" onclick="setIndustryFilter('healthcare', this)">
+            <i data-lucide="stethoscope" style="width:14px;height:14px;"></i>
+            Clinics & Health
+          </button>
+          <button class="filter-item" onclick="setIndustryFilter('automotive', this)">
+            <i data-lucide="car" style="width:14px;height:14px;"></i>
+            Automotive & Salons
+          </button>
+        </div>
+
+        <div class="top-action-pills">
+          <a href="https://harrykalsi24.github.io/Review-AI/index.html" target="_blank" rel="noopener noreferrer" class="btn-pill-subtle">
+            <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+            Live Demo
+          </a>
+          <a href="#simulator" class="btn-pill-dark">
+            <span>Try AI Kiosk</span>
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- HERO SECTION: Matches the visual composition of the uploaded image -->
+      <section id="hero" class="hero-grid-showcase">
+        
+        <!-- Left Editorial Block -->
+        <div class="hero-editorial-left reveal-on-scroll">
+          <div class="hero-eyebrow-pill">
+            <span class="pulse-dot"></span>
+            <span>MODERN INTELLIGENCE — AI FEEDBACK KIOSK</span>
+          </div>
+
+          <h1 class="hero-title-giant">
+            Reviews for a <br>
+            <span class="gradient-word">Better Business</span>
+          </h1>
+
+          <p class="hero-subtitle-lead">
+            Turn physical foot traffic into verified 5-star Google & Yelp reviews. Empower your customers with a 15-second voice & AI assisted feedback kiosk that elevates your reputation automatically.
+          </p>
+
+          <!-- Floating Interactive Search / Prompt Pill Card (Matching Bottom-Left) -->
+          <div class="floating-interactive-search-card reveal-on-scroll" data-delay="1">
+            <h2 class="card-title-bold">Boost Your Local Reputation</h2>
+            
+            <form class="interactive-input-pill" onsubmit="handleHeroQuickTest(event)">
+              <i data-lucide="search" style="width:18px;height:18px;color:var(--text-muted);margin-right:8px;"></i>
+              <input type="text" id="heroPromptInput" placeholder="Try your store name: 'Modern Electronics Mukerian'..." value="Modern Electronics Mukerian">
+              <button type="submit" aria-label="Test Review AI">
+                <i data-lucide="arrow-right" style="width:18px;height:18px;"></i>
+              </button>
+            </form>
+
+            <div class="social-proof-bar">
+              <div class="avatar-stack-group">
+                <img class="avatar-pill-thumb" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Customer avatar">
+                <img class="avatar-pill-thumb" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Customer avatar">
+                <img class="avatar-pill-thumb" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Customer avatar">
+                <div class="avatar-pill-thumb" style="background:var(--warm-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">+5K</div>
+              </div>
+              <div class="proof-numbers-text">
+                <span class="proof-counter">42,800+</span>
+                <span class="proof-label">Verified Reviews Captured</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Floating Oasis Card (Matching Bottom-Right Architecture Pill Card) -->
+        <div class="hero-floating-right-container">
+          <!-- Interactive EyeTracker AI Companion Dock -->
+          <div class="hero-companion-pill-dock reveal-on-scroll" data-delay="1">
+            <div id="heroEyeTracker"></div>
+            <div class="hero-companion-info">
+              <span class="hero-companion-title">
+                <span class="hero-companion-pulse"></span>
+                Review Sentinel AI
+              </span>
+              <span class="hero-companion-sub">Watching visitors live • Poke me!</span>
+            </div>
+          </div>
+
+          <div class="floating-oasis-card reveal-on-scroll" data-delay="2">
+            <div class="oasis-card-header">
+              <h3 class="oasis-kiosk-name" id="featuredKioskTitle">Apex AI Terminal 4.0</h3>
+              <a href="#simulator" class="oasis-icon-arrow-btn" title="Launch Simulator">
+                <i data-lucide="arrow-up-right" style="width:20px;height:20px;"></i>
+              </a>
+            </div>
+
+            <div class="oasis-location-row">
+              <i data-lucide="map-pin" style="width:15px;height:15px;color:var(--warm-accent);"></i>
+              <span id="featuredKioskLocation">Modern Electronics, Mukerian, PB</span>
+            </div>
+
+            <div class="kiosk-spec-metrics-grid">
+              <div class="spec-metric-item">
+                <i data-lucide="zap" style="width:18px;height:18px;"></i>
+                <span class="spec-metric-val">4.9x</span>
+                <span class="spec-metric-lbl">Review Velocity</span>
+              </div>
+              <div class="spec-metric-item">
+                <i data-lucide="clock" style="width:18px;height:18px;"></i>
+                <span class="spec-metric-val">14s</span>
+                <span class="spec-metric-lbl">Avg Response</span>
+              </div>
+              <div class="spec-metric-item">
+                <i data-lucide="smile" style="width:18px;height:18px;"></i>
+                <span class="spec-metric-val">99.4%</span>
+                <span class="spec-metric-lbl">Satisfaction</span>
+              </div>
+            </div>
+
+            <a href="#simulator" class="oasis-view-details-btn">
+              <span>Test Interactive Kiosk</span>
+              <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE AI REVIEW SYNTHESIZER (Generative UI) -->
+      <section id="simulator" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="sparkles" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Interactive Live Demo</span>
+          </div>
+          <h2 class="section-title">Experience the AI Review Engine</h2>
+          <p class="section-subtitle">
+            See how a customer at your store turns 2 clicks and 3 keywords into an authentic, SEO-optimized Google review in seconds.
+          </p>
+        </div>
+
+        <div class="interactive-simulator-card reveal-on-scroll">
+          <!-- Left Controls -->
+          <div class="sim-controls-panel">
+            <div class="sim-panel-title">
+              <i data-lucide="sliders" style="width:20px;height:20px;color:var(--warm-accent);"></i>
+              <span>Customer Touchpoint Input</span>
+            </div>
+
+            <!-- Star Rating -->
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:8px;">1. Customer Star Rating</label>
+              <div class="star-rating-picker" id="starContainer">
+                <button type="button" class="star-btn active" onclick="setRating(1)">★</button>
+                <button type="button" class="star-btn active" onclick="setRating(2)">★</button>
+                <button type="button" class="star-btn active" onclick="setRating(3)">★</button>
+                <button type="button" class="star-btn active" onclick="setRating(4)">★</button>
+                <button type="button" class="star-btn active" onclick="setRating(5)">★</button>
+                <span id="ratingLabel" style="margin-left:12px;font-weight:700;font-size:14px;color:var(--warm-accent);">5.0 - Exceptional</span>
+              </div>
+            </div>
+
+            <!-- Experience Tags Chips -->
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:8px;">2. Quick Highlights (Tap 1-3 tags)</label>
+              <div class="chips-selector">
+                <button type="button" class="vibe-chip selected" onclick="toggleVibe(this, 'Courteous Staff')">✨ Courteous Staff</button>
+                <button type="button" class="vibe-chip selected" onclick="toggleVibe(this, 'Best Price in Town')">🏷️ Best Price in Town</button>
+                <button type="button" class="vibe-chip selected" onclick="toggleVibe(this, 'Prompt Delivery')">⚡ Prompt Delivery</button>
+                <button type="button" class="vibe-chip" onclick="toggleVibe(this, 'Clean Showroom')">🏬 Clean Showroom</button>
+                <button type="button" class="vibe-chip" onclick="toggleVibe(this, 'Original Warranty')">🛡️ Original Warranty</button>
+                <button type="button" class="vibe-chip" onclick="toggleVibe(this, 'Knowledgeable Demo')">💡 Knowledgeable Demo</button>
+              </div>
+            </div>
+
+            <!-- AI Tone Selection -->
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:8px;">3. AI Voice Tone</label>
+              <div class="tone-selector-pills">
+                <button type="button" class="tone-pill active" onclick="setTone('enthusiastic', this)">Enthusiastic</button>
+                <button type="button" class="tone-pill" onclick="setTone('professional', this)">Professional</button>
+                <button type="button" class="tone-pill" onclick="setTone('concise', this)">Short & Sweet</button>
+                <button type="button" class="tone-pill" onclick="setTone('local', this)">Local Punjaabi/Hindi</button>
+              </div>
+            </div>
+
+            <!-- Freeform note -->
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:8px;">Optional Mention</label>
+              <input type="text" id="customKeywordInput" placeholder="e.g. bought Samsung OLED TV from Harry..." value="bought 4K smart TV from Harry, explained all features patiently" style="width:100%;padding:12px 18px;border-radius:var(--radius-pill);border:1px solid var(--pill-border);background:rgba(255,255,255,0.7);font-family:var(--font-body);font-size:13px;outline:none;">
+            </div>
+
+            <button type="button" class="generate-ai-trigger-btn" onclick="generateSimulatedReview()">
+              <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
+              <span>Generate AI Review Now</span>
+            </button>
+          </div>
+
+          <!-- Right Output Preview -->
+          <div class="sim-output-card">
+            <div class="review-channel-tabs">
+              <div class="channel-tab active" onclick="switchChannel('google', this)">
+                <i data-lucide="chrome" style="width:14px;height:14px;color:#ea4335;"></i>
+                <span>Google Maps Review</span>
+              </div>
+              <div class="channel-tab" onclick="switchChannel('kiosk', this)">
+                <i data-lucide="tablet" style="width:14px;height:14px;color:#3b82f6;"></i>
+                <span>Store Kiosk QR</span>
+              </div>
+              <div class="channel-tab" onclick="switchChannel('whatsapp', this)">
+                <i data-lucide="message-circle" style="width:14px;height:14px;color:#22c55e;"></i>
+                <span>WhatsApp Sync</span>
+              </div>
+            </div>
+
+            <div id="simReviewOutputBox" class="generated-review-bubble">
+              "Visited Modern Electronics in Mukerian today to buy a new 4K Smart TV. Absolutely blown away by the courteous staff and the genuine prices—better than anything I saw online! Harry walked me through all the display modes with immense patience and ensured the delivery arrived safe the same afternoon. Highest recommendation for electronics in Punjab!"
+            </div>
+
+            <!-- Sentiment meter -->
+            <div class="sentiment-ai-meter">
+              <span class="sentiment-badge-tag">
+                <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
+                <span id="sentimentLabel">Sentiment: Positive (98.6%)</span>
+              </span>
+              <span style="font-size:12px;color:var(--text-muted);" id="keywordsMatchedBadge">4 Target SEO Keywords Included</span>
+            </div>
+
+            <!-- Action buttons inside preview -->
+            <div style="display:flex;gap:12px;">
+              <button type="button" onclick="copySimulatedReview()" class="btn-pill-subtle" style="flex:1;justify-content:center;">
+                <i data-lucide="copy" style="width:14px;height:14px;"></i>
+                <span id="copyReviewBtnText">Copy Review</span>
+              </button>
+              <button type="button" onclick="alert('Sent to Google Business Profile API sandbox!')" class="btn-pill-dark" style="flex:1;justify-content:center;">
+                <i data-lucide="send" style="width:14px;height:14px;"></i>
+                <span>Publish Test</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES SECTION -->
+      <section id="services" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="cpu" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Core Capabilities</span>
+          </div>
+          <h2 class="section-title">End-to-End Reputation Intelligence</h2>
+          <p class="section-subtitle">
+            Everything your business needs to turn everyday shoppers into raving digital advocates across Google, Yelp, and social media.
+          </p>
+        </div>
+
+        <div class="services-cards-grid">
+          <!-- Service 1 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="1">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="tablet" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Smart Countertop Kiosks</h3>
+              <p class="service-desc">
+                Sleek, wireless tablet docks placed at checkout counters. Customers tap stars or scan an instant NFC/QR code right as they complete their purchase.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Tap & Go NFC + Instant Dynamic QR</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Offline buffer with automatic cloud sync</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Custom branded UI matching your storefront</li>
+              </ul>
+            </div>
+            <a href="#simulator" class="service-cta-link">
+              <span>Explore Kiosks</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Service 2 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="2">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="mic" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Voice & Generative AI Assistant</h3>
+              <p class="service-desc">
+                Eliminate writer's block. Customers speak a few words in their native tongue (English, Hindi, Punjabi, Spanish), and our fine-tuned AI crafts articulate reviews.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Multilingual voice-to-text synthesis</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Authentic phrasing that sounds human</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Automatic SEO keyword insertion</li>
+              </ul>
+            </div>
+            <a href="#simulator" class="service-cta-link">
+              <span>Test AI Voice</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Service 3 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="3">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="shield-alert" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Negative Feedback Interceptor</h3>
+              <p class="service-desc">
+                Catch unhappy customers before they vent on Google. Ratings below 4 stars are routed straight to the store owner or manager's phone for instant resolution.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> SMS & WhatsApp owner alert in 5 seconds</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Private complaint resolution portal</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> 82% resolution rate before public posting</li>
+              </ul>
+            </div>
+            <a href="#advantages" class="service-cta-link">
+              <span>See Protection</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Service 4 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="4">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="bot" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Automated AI Reply Bot</h3>
+              <p class="service-desc">
+                Never leave a customer hanging. Our agent replies to all incoming Google and Yelp reviews with personalized, thoughtful messages within minutes.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Context-aware individualized responses</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Owner approval toggle or full auto-pilot</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Demonstrates top-tier customer care</li>
+              </ul>
+            </div>
+            <a href="#simulator" class="service-cta-link">
+              <span>View Reply Agent</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Service 5 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="5">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="bar-chart-3" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Sentiment & Trend Analytics</h3>
+              <p class="service-desc">
+                Discover what your customers love and what needs fixing. Deep NLP heatmaps identify top product mentions, staff praise, and store cleanliness trends.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Staff performance leaderboard</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Competitor local ranking comparison</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Weekly executive digest delivered to email</li>
+              </ul>
+            </div>
+            <a href="#calculator" class="service-cta-link">
+              <span>Inspect Insights</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Service 6 -->
+          <div class="service-pill-card reveal-on-scroll" data-delay="6">
+            <div class="service-card-top">
+              <div class="service-icon-capsule">
+                <i data-lucide="gift" style="width:28px;height:28px;"></i>
+              </div>
+              <h3 class="service-title">Instant Loyalty & Coupon Rewards</h3>
+              <p class="service-desc">
+                Reward customers for sharing their experience. Immediately after review completion, unlock a scratch card, discount code, or free coffee voucher.
+              </p>
+              <ul class="service-feature-bullets">
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Drives 35% higher repeat store visits</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Google review policy 100% compliant</li>
+                <li><i data-lucide="check" style="width:16px;height:16px;"></i> Custom promo rules and expiration timers</li>
+              </ul>
+            </div>
+            <a href="#pricing" class="service-cta-link">
+              <span>Reward Features</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADVANTAGES COMPARISON SECTION -->
+      <section id="advantages" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="check-check" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Win-Win Value</span>
+          </div>
+          <h2 class="section-title">Advantages for Businesses & Shoppers</h2>
+          <p class="section-subtitle">
+            Designed for frictionless in-store interactions that reward customers and accelerate business bottom-line growth.
+          </p>
+        </div>
+
+        <div class="advantages-split-grid">
+          <!-- Advantages for Businesses -->
+          <div class="advantage-column-card reveal-on-scroll" data-delay="1">
+            <div class="advantage-header-row">
+              <div class="advantage-badge-icon">
+                <i data-lucide="building-2" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <h3 class="advantage-col-title">For Store Owners & Brands</h3>
+                <span style="font-size:13px;color:var(--text-muted);">Dominating local search and footfall</span>
+              </div>
+            </div>
+
+            <div class="advantage-items-list">
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="trending-up" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Top 3 Google Maps Placement</h4>
+                  <p>Consistent, keyword-rich fresh reviews catapult your business into the coveted Google Local 3-Pack, driving free daily organic calls and visits.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="shield" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Zero 1-Star Surprise Disasters</h4>
+                  <p>Our smart sentiment firewall identifies dissatisfied patrons at checkout and prompts immediate on-the-spot management resolution.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="users" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Staff Accountability & Motivation</h4>
+                  <p>Automatic employee tag attribution allows you to see which sales reps generate the happiest customers and reward team stars.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="sparkles" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>100% Hands-Free Automation</h4>
+                  <p>No more reminding staff to beg customers for reviews. The attractive kiosk does the work seamlessly with every billing transaction.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Advantages for Customers -->
+          <div class="advantage-column-card reveal-on-scroll" data-delay="2">
+            <div class="advantage-header-row">
+              <div class="advantage-badge-icon">
+                <i data-lucide="heart" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <h3 class="advantage-col-title">For Customers & Shoppers</h3>
+                <span style="font-size:13px;color:var(--text-muted);">Effortless, fun, and rewarded feedback</span>
+              </div>
+            </div>
+
+            <div class="advantage-items-list">
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="zap" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>15-Second Completion</h4>
+                  <p>No painful forms or long survey essays. Two taps on the screen, a smart speech summary, and they are done before their receipt prints.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="languages" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Express Yourself in Any Language</h4>
+                  <p>Customers can speak or read in their native dialect without worrying about spelling, grammar, or English phrasing.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="gift" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Instant Exclusive Perks</h4>
+                  <p>Receive immediate store coupons, loyalty points, or complimentary items right onto their smartphone as a token of gratitude.</p>
+                </div>
+              </div>
+
+              <div class="advantage-item">
+                <div class="adv-icon-wrap"><i data-lucide="lock" style="width:16px;height:16px;"></i></div>
+                <div class="adv-text">
+                  <h4>Private & Spam-Free</h4>
+                  <p>Personal phone numbers and contact details remain strictly confidential and are never sold or targeted with spam marketing.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE ROI CALCULATOR -->
+      <section id="calculator" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="calculator" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Growth Simulator</span>
+          </div>
+          <h2 class="section-title">Calculate Your Growth Potential</h2>
+          <p class="section-subtitle">
+            Estimate your monthly review velocity and incremental revenue gain based on your existing store customer count.
+          </p>
+        </div>
+
+        <div class="roi-calculator-container reveal-on-scroll">
+          <!-- Left Sliders -->
+          <div>
+            <div class="roi-slider-group">
+              <div class="roi-slider-header">
+                <span style="font-weight:700;font-size:15px;">Monthly Store Customers</span>
+                <span class="roi-val-badge" id="trafficBadge">1,500 / mo</span>
+              </div>
+              <input type="range" min="200" max="10000" step="100" value="1500" class="styled-range-input" id="trafficSlider" oninput="calculateROI()">
+            </div>
+
+            <div class="roi-slider-group">
+              <div class="roi-slider-header">
+                <span style="font-weight:700;font-size:15px;">Average Sale / Ticket Value</span>
+                <span class="roi-val-badge" id="ticketBadge">$85</span>
+              </div>
+              <input type="range" min="10" max="1000" step="5" value="85" class="styled-range-input" id="ticketSlider" oninput="calculateROI()">
+            </div>
+
+            <div class="roi-slider-group">
+              <div class="roi-slider-header">
+                <span style="font-weight:700;font-size:15px;">Current Google Star Rating</span>
+                <span class="roi-val-badge" id="currentRatingBadge">4.1 ★</span>
+              </div>
+              <input type="range" min="3.0" max="4.9" step="0.1" value="4.1" class="styled-range-input" id="currentRatingSlider" oninput="calculateROI()">
+            </div>
+          </div>
+
+          <!-- Right Preview Display -->
+          <div class="roi-output-preview">
+            <div class="roi-stat-row">
+              <div>
+                <div class="roi-stat-title">Estimated New Monthly Reviews</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);">~18% capture rate at checkout</div>
+              </div>
+              <div class="roi-stat-big" id="resNewReviews">+270</div>
+            </div>
+
+            <div class="roi-stat-row">
+              <div>
+                <div class="roi-stat-title">Projected Star Rating in 90 Days</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);">Weighted dilution of past low ratings</div>
+              </div>
+              <div class="roi-stat-big" id="resProjectedRating">4.8 ★</div>
+            </div>
+
+            <div class="roi-stat-row">
+              <div>
+                <div class="roi-stat-title">Est. Monthly Revenue Uplift</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);">Harvard Business School: +9% per 0.5★</div>
+              </div>
+              <div class="roi-stat-big" id="resRevenueGain">+$11,475</div>
+            </div>
+
+            <a href="#pricing" class="btn-pill-dark" style="background:#fff;color:var(--dark-navy);justify-content:center;margin-top:8px;">
+              <span>Claim Your Kiosk Hardware</span>
+              <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- TESTIMONIALS / WALL OF VERIFIED BUSINESSES -->
+      <section id="proof" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="award" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Verified Results</span>
+          </div>
+          <h2 class="section-title">Loved by Modern Businesses</h2>
+          <p class="section-subtitle">
+            See how brick-and-mortar pioneers across electronics, dining, and retail transformed their online dominance.
+          </p>
+        </div>
+
+        <div class="testimonials-floating-grid">
+          <div class="testimonial-card-pill reveal-on-scroll" data-delay="1">
+            <div style="color:#f59e0b;font-size:18px;">★★★★★</div>
+            <p style="font-size:14px;line-height:1.6;color:var(--text-main);">
+              "Before Review-AI, we had 48 reviews over 4 years. In just 90 days with the countertop terminal at Modern Electronics Mukerian, we crossed 430 reviews with a 4.9 average. Customers love how quick it is!"
+            </p>
+            <div class="testimonial-author-row">
+              <img class="author-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Harjit Kalsi">
+              <div class="author-info">
+                <h5>Harjit Kalsi</h5>
+                <p>Owner, Modern Electronics Mukerian</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card-pill reveal-on-scroll" data-delay="2">
+            <div style="color:#f59e0b;font-size:18px;">★★★★★</div>
+            <p style="font-size:14px;line-height:1.6;color:var(--text-main);">
+              "The negative feedback interceptor saved us multiple times. A customer had an issue with a courier delay; the kiosk flagged it instantly to my WhatsApp and we resolved it before they even left our store."
+            </p>
+            <div class="testimonial-author-row">
+              <img class="author-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Elena Rostova">
+              <div class="author-info">
+                <h5>Elena Rostova</h5>
+                <p>General Manager, Lumina Boutique</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card-pill reveal-on-scroll" data-delay="3">
+            <div style="color:#f59e0b;font-size:18px;">★★★★★</div>
+            <p style="font-size:14px;line-height:1.6;color:var(--text-main);">
+              "The voice AI in Punjabi and Hindi is pure magic. Elders who would never type on a keyboard just speak their compliments, and the AI turns it into fluent Google reviews. Outstanding technology."
+            </p>
+            <div class="testimonial-author-row">
+              <img class="author-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" alt="Rajinder Singh">
+              <div class="author-info">
+                <h5>Rajinder Singh</h5>
+                <p>Director, Grand Bazaar Retail Hub</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRICING TIERS -->
+      <section id="pricing" class="content-section">
+        <div class="section-header-centered reveal-on-scroll">
+          <div class="pill-badge">
+            <i data-lucide="tag" style="width:14px;height:14px;color:var(--warm-accent);"></i>
+            <span>Transparent Investment</span>
+          </div>
+          <h2 class="section-title">Futuristic Plans for Every Scale</h2>
+          <p class="section-subtitle">
+            All plans include commercial kiosk software, generative AI synthesis, and zero hardware lock-in.
+          </p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Starter -->
+          <div class="pricing-tier-card reveal-on-scroll" data-delay="1">
+            <h3 class="plan-name">Digital QR Starter</h3>
+            <p style="font-size:13px;color:var(--text-muted);">For boutique shops starting with smart dynamic QR codes.</p>
+            <div class="plan-price-row">
+              <span class="plan-price">$29</span>
+              <span class="plan-period">/ month</span>
+            </div>
+            <ul class="service-feature-bullets" style="margin-bottom:28px;">
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Unlimited QR & NFC Tap scans</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Generative AI review drafting</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Google Business Profile sync</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Basic email support</li>
+            </ul>
+            <a href="#simulator" class="btn-pill-subtle" style="justify-content:center;margin-top:auto;">Choose Starter</a>
+          </div>
+
+          <!-- Featured: Apex Kiosk -->
+          <div class="pricing-tier-card featured reveal-on-scroll" data-delay="2">
+            <div class="popular-ribbon">Most Popular</div>
+            <h3 class="plan-name">Apex Pro Terminal</h3>
+            <p style="font-size:13px;color:var(--text-muted);">Includes commercial tablet stand + AI voice synthesizer.</p>
+            <div class="plan-price-row">
+              <span class="plan-price" style="color:var(--warm-accent);">$79</span>
+              <span class="plan-period">/ month</span>
+            </div>
+            <ul class="service-feature-bullets" style="margin-bottom:28px;">
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Everything in Starter + Kiosk App</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Voice-to-Text Multilingual AI</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Negative Feedback SMS Interceptor</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Automated AI Review Responder</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Priority WhatsApp & phone hotline</li>
+            </ul>
+            <a href="#simulator" class="btn-pill-dark" style="justify-content:center;margin-top:auto;">Launch Kiosk Pro</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="pricing-tier-card reveal-on-scroll" data-delay="3">
+            <h3 class="plan-name">Multi-Location Chain</h3>
+            <p style="font-size:13px;color:var(--text-muted);">For multi-branch retail, restaurants, and franchise networks.</p>
+            <div class="plan-price-row">
+              <span class="plan-price">$199</span>
+              <span class="plan-period">/ month</span>
+            </div>
+            <ul class="service-feature-bullets" style="margin-bottom:28px;">
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Up to 5 store locations included</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Centralized multi-store dashboard</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Staff performance benchmarks</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;"></i> Custom API & POS integrations</li>
+            </ul>
+            <a href="#simulator" class="btn-pill-subtle" style="justify-content:center;margin-top:auto;">Contact Enterprise</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FUTURISTIC FOOTER -->
+      <footer class="futuristic-footer reveal-on-scroll">
+        <div class="footer-top-row">
+          <a href="#hero" class="brand-pill-group">
+            <div class="brand-icon-logo">
+              <i data-lucide="message-square-heart" style="width:20px;height:20px;"></i>
+            </div>
+            <span class="brand-name">Review<span>AI</span></span>
+          </a>
+
+          <ul class="footer-links-row">
+            <li><a href="#hero">Overview</a></li>
+            <li><a href="#simulator">Simulator</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#advantages">Advantages</a></li>
+            <li><a href="#calculator">ROI Engine</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="https://harrykalsi24.github.io/Review-AI/index.html" target="_blank" rel="noopener noreferrer">Live Demo</a></li>
+          </ul>
+
+          <a href="#simulator" class="btn-pill-dark">
+            <span>Get Started</span>
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+
+        <div class="footer-bottom-row">
+          <div>
+            &copy; 2026 Review-AI Inc. Inspired by modern architectural living & feedback automation.
+          </div>
+          <div>
+            Designed for Modern Electronics Mukerian & Forward-Thinking Retailers worldwide.
+          </div>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Ambient Twilight Desert Canvas Particles & Sky Glow
+    const canvas = document.getElementById('ambientCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const PARTICLE_COUNT = 45;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 0.6,
+        alpha: Math.random() * 0.7 + 0.2,
+        speedX: (Math.random() - 0.5) * 0.35,
+        speedY: -Math.random() * 0.45 - 0.1,
+        color: Math.random() > 0.5 ? 'rgba(223, 162, 108, ' : 'rgba(215, 199, 226, '
+      });
+    }
+
+    function renderCanvas() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw floating luminous particles
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + p.alpha + ')';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(224, 143, 90, 0.7)';
+        ctx.fill();
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+      }
+
+      requestAnimationFrame(renderCanvas);
+    }
+    renderCanvas();
+
+    // MagicUI Animated Theme Toggler Implementation (View Transitions API + Circular Reveal)
+    function triggerAnimatedThemeToggle(e) {
+      const isCurrentlyDark = document.body.getAttribute('data-theme') === 'dark';
+      const newTheme = isCurrentlyDark ? 'light' : 'dark';
+
+      if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+        const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+        const x = e.clientX || rect.left + rect.width / 2;
+        const y = e.clientY || rect.top + rect.height / 2;
+
+        const endRadius = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        );
+
+        const transition = document.startViewTransition(() => {
+          document.body.setAttribute('data-theme', newTheme);
+          document.documentElement.setAttribute('data-theme', newTheme);
+        });
+
+        transition.ready.then(() => {
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`
+              ]
+            },
+            {
+              duration: 950,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              pseudoElement: '::view-transition-new(root)'
+            }
+          );
+        });
+      } else {
+        document.body.setAttribute('data-theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+      }
+    }
+
+    // Industry Filter Handler
+    const kiosksData = {
+      retail: {
+        title: "Apex Kiosk 4.0 (Retail)",
+        location: "Modern Electronics, Mukerian, PB",
+        placeholder: "Modern Electronics Mukerian",
+        reviews: "42,800+"
+      },
+      hospitality: {
+        title: "DineSmart Kiosk 3.0",
+        location: "Oasis Bistro & Lounge, Arizona",
+        placeholder: "The Rustic Olive Cafe",
+        reviews: "68,400+"
+      },
+      healthcare: {
+        title: "CarePulse Terminal",
+        location: "Radiant Dental & Aesthetic Care",
+        placeholder: "Apex Dental Clinic",
+        reviews: "19,200+"
+      },
+      automotive: {
+        title: "DriveCare Kiosk Pro",
+        location: "Heritage Auto Spa & Service",
+        placeholder: "Velocity Supercars Hub",
+        reviews: "31,500+"
+      }
+    };
+
+    function setIndustryFilter(industry, el) {
+      document.querySelectorAll('.filter-item').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+
+      const data = kiosksData[industry];
+      if (data) {
+        document.getElementById('featuredKioskTitle').textContent = data.title;
+        document.getElementById('featuredKioskLocation').textContent = data.location;
+        document.getElementById('heroPromptInput').value = data.placeholder;
+      }
+    }
+
+    // Hero Quick Test
+    function handleHeroQuickTest(e) {
+      e.preventDefault();
+      const val = document.getElementById('heroPromptInput').value.trim();
+      const simSection = document.getElementById('simulator');
+      simSection.scrollIntoView({ behavior: 'smooth' });
+
+      if (val) {
+        document.getElementById('customKeywordInput').value = `Bought from ${val}, amazing staff and top quality`;
+        generateSimulatedReview();
+      }
+    }
+
+    // SIMULATOR STATE
+    let currentRating = 5;
+    let selectedVibes = ['Courteous Staff', 'Best Price in Town', 'Prompt Delivery'];
+    let currentTone = 'enthusiastic';
+    let currentChannel = 'google';
+
+    function setRating(stars) {
+      currentRating = stars;
+      const starBtns = document.querySelectorAll('.star-btn');
+      starBtns.forEach((btn, idx) => {
+        if (idx < stars) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const label = document.getElementById('ratingLabel');
+      const sentiment = document.getElementById('sentimentLabel');
+      if (stars >= 4) {
+        label.textContent = `${stars}.0 - Outstanding`;
+        label.style.color = 'var(--warm-accent)';
+        sentiment.textContent = `Sentiment: Positive (${(92 + stars * 1.5).toFixed(1)}%)`;
+      } else if (stars === 3) {
+        label.textContent = `3.0 - Average`;
+        label.style.color = '#eab308';
+        sentiment.textContent = `Sentiment: Neutral (58.4%)`;
+      } else {
+        label.textContent = `${stars}.0 - Needs Attention`;
+        label.style.color = '#ef4444';
+        sentiment.textContent = `Sentiment: Intercept Alert Triggered (Private Management)`;
+      }
+
+      generateSimulatedReview();
+    }
+
+    function toggleVibe(btn, vibe) {
+      btn.classList.toggle('selected');
+      if (selectedVibes.includes(vibe)) {
+        selectedVibes = selectedVibes.filter(v => v !== vibe);
+      } else {
+        selectedVibes.push(vibe);
+      }
+      generateSimulatedReview();
+    }
+
+    function setTone(tone, btn) {
+      currentTone = tone;
+      document.querySelectorAll('.tone-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      generateSimulatedReview();
+    }
+
+    function switchChannel(channel, btn) {
+      currentChannel = channel;
+      document.querySelectorAll('.channel-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      generateSimulatedReview();
+    }
+
+    function generateSimulatedReview() {
+      const outputBox = document.getElementById('simReviewOutputBox');
+      const customKw = document.getElementById('customKeywordInput').value.trim();
+      const tagsList = selectedVibes.join(', ');
+
+      if (currentRating < 4) {
+        outputBox.innerHTML = `⚠️ <strong>Private Manager Intercept Mode:</strong><br>"Customer rating (${currentRating}★). To safeguard public Google reputation, our AI has opened a private resolution ticket. The store manager at Modern Electronics receives an instant WhatsApp alert with customer feedback: '${customKw || tagsList}' to resolve directly."`;
+        return;
+      }
+
+      let reviewText = "";
+
+      if (currentTone === 'enthusiastic') {
+        reviewText = `"Had the most wonderful experience at Modern Electronics! ${customKw ? customKw + '. ' : ''}The team is so courteous and truly offers the best pricing around. Everything was handled with top speed and genuine warmth. 10/10 will definitely be returning!"`;
+      } else if (currentTone === 'professional') {
+        reviewText = `"Consistently impressed with the professionalism and customer service. ${customKw ? customKw + '. ' : ''}Key highlights include their ${tagsList.toLowerCase() || 'reliable service'}. High transparency and fair billing. Recommended for anyone looking for authentic products and seamless support."`;
+      } else if (currentTone === 'concise') {
+        reviewText = `"Fast, courteous, and honest pricing. ${customKw ? customKw + '. ' : ''}Easily the best shopping experience in the region. 5 stars."`;
+      } else if (currentTone === 'local') {
+        reviewText = `"Boht hi vadiya experience reha Modern Electronics te! Harry bai te saara staff boht helpful te genuine rate ne. Prompt delivery te original guarantee. Mukerian ch sab ton best electronics store hai!"`;
+      }
+
+      outputBox.innerHTML = reviewText;
+      outputBox.classList.remove('animating');
+      void outputBox.offsetWidth; // Trigger reflow for smooth fade
+      outputBox.classList.add('animating');
+      lucide.createIcons();
+    }
+
+    function copySimulatedReview() {
+      const text = document.getElementById('simReviewOutputBox').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btnText = document.getElementById('copyReviewBtnText');
+        btnText.textContent = "Copied!";
+        setTimeout(() => { btnText.textContent = "Copy Review"; }, 2000);
+      });
+    }
+
+    // ROI CALCULATOR LOGIC
+    function calculateROI() {
+      const traffic = parseInt(document.getElementById('trafficSlider').value);
+      const ticket = parseInt(document.getElementById('ticketSlider').value);
+      const rating = parseFloat(document.getElementById('currentRatingSlider').value);
+
+      document.getElementById('trafficBadge').textContent = traffic.toLocaleString() + " / mo";
+      document.getElementById('ticketBadge').textContent = "$" + ticket;
+      document.getElementById('currentRatingBadge').textContent = rating.toFixed(1) + " ★";
+
+      // 18% of customers use kiosk
+      const newReviews = Math.round(traffic * 0.18);
+      document.getElementById('resNewReviews').textContent = "+" + newReviews.toLocaleString();
+
+      // Projected rating rises towards 4.9
+      const projected = Math.min(4.9, rating + (5.0 - rating) * 0.75).toFixed(1);
+      document.getElementById('resProjectedRating').textContent = projected + " ★";
+
+      // Estimated revenue uplift: +9% per 0.5 rating increase (Harvard Business School study)
+      const ratingDiff = Math.max(0, projected - rating);
+      const upliftFactor = (ratingDiff / 0.5) * 0.09;
+      const monthlyGross = traffic * ticket;
+      const revenueGain = Math.round(monthlyGross * upliftFactor);
+
+      document.getElementById('resRevenueGain').textContent = "+$" + revenueGain.toLocaleString();
+    }
+
+    // Run initial ROI computation
+    calculateROI();
+
+    // Reset scroll to top on load
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    window.addEventListener('load', () => window.scrollTo(0, 0));
+
+    // Apple-Style Dynamic Island / Navbar Hide on Scroll Down & Reappear on Slight Scroll Up
+    const topBar = document.querySelector('.floating-top-bar');
+    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    let isNavHidden = false;
+    let isScrollTicking = false;
+    const SCROLL_THRESHOLD = 6; // Butter-smooth reappear on even slight scroll-up
+
+    function handleNavbarScroll() {
+      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const hero = document.getElementById('hero');
+      const heroBottom = hero ? (hero.offsetTop + hero.offsetHeight - 80) : 650;
+
+      // Always visible while inside or before hero section
+      if (currentScrollY <= heroBottom) {
+        if (isNavHidden) {
+          topBar.classList.remove('nav-hidden');
+          isNavHidden = false;
+        }
+        lastScrollY = currentScrollY;
+        isScrollTicking = false;
+        return;
+      }
+
+      const scrollDiff = currentScrollY - lastScrollY;
+
+      // Scrolling DOWN past hero section -> smoothly hide top navbar
+      if (scrollDiff > SCROLL_THRESHOLD && !isNavHidden) {
+        topBar.classList.add('nav-hidden');
+        isNavHidden = true;
+      }
+      // Scrolling UP even a little bit -> butter smooth reappear
+      else if (scrollDiff < -SCROLL_THRESHOLD && isNavHidden) {
+        topBar.classList.remove('nav-hidden');
+        isNavHidden = false;
+      }
+
+      lastScrollY = currentScrollY;
+      isScrollTicking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!isScrollTicking) {
+        window.requestAnimationFrame(handleNavbarScroll);
+        isScrollTicking = true;
+      }
+    }, { passive: true });
+
+    // Smooth Left Navbar Click: Immediately hide top navbar with Apple animation unless returning to hero
+    const dockLinks = document.querySelectorAll('.dock-btn');
+    dockLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (href && href !== '#hero') {
+          topBar.classList.add('nav-hidden');
+          isNavHidden = true;
+        } else if (href === '#hero') {
+          topBar.classList.remove('nav-hidden');
+          isNavHidden = false;
+        }
+        
+        // Let scroll settle
+        setTimeout(() => {
+          lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        }, 550);
+      });
+    });
+
+    // Highlight active dock icon on scroll
+    const sections = document.querySelectorAll('section');
+
+    window.addEventListener('scroll', () => {
+      let currentSectionId = '';
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 220;
+        if (window.scrollY >= top) {
+          currentSectionId = sec.getAttribute('id');
+        }
+      });
+
+      dockLinks.forEach(link => {
+        if (link.getAttribute('href') === `#${currentSectionId}`) {
+          dockLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { passive: true });
+
+    // SmoothUI Scroll Reveal System (IntersectionObserver)
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.1
+    });
+
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // Mount Bencho EyeTracker in Hero Section
+    (function initEyeTracker() {
+      const container = document.getElementById('heroEyeTracker');
+      if (!container) return;
+
+      const size = 52;
+      const follow = 65;
+      const bounce = 32;
+      const eyeScale = 1.15;
+      const R = 50;
+      const GAP = 0.19;
+      const TILT = 64;
+      const baseEye = { w: 9, h: 15, r: 4.5 };
+      const eye = {
+        w: baseEye.w * eyeScale,
+        h: baseEye.h * eyeScale,
+        r: baseEye.r * eyeScale
+      };
+
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+      const LINES = [
+        "Hey, I see you.",
+        "Boop.",
+        "4.9★ rating today!",
+        "Hi there!",
+        "Tracking reviews...",
+        "I'm watching you.",
+        "You found me."
+      ];
+      const TINTS = ["#3b5bff", "#dfa26c", "#179c52", "#e0307f"];
+      const KEY_MS = 38;
+      const HOLD_MS = 1600;
+
+      const clipId = "eyt-hero-clip-" + Math.random().toString(36).slice(2, 8);
+      const cubeShape = "M30 6 H70 A24 24 0 0 1 94 30 V70 A24 24 0 0 1 70 94 H30 A24 24 0 0 1 30 6 Z";
+
+      container.innerHTML = `
+        <div class="eyt" style="--eyt-size: ${size}px;" role="img" aria-label="A ball with two eyes that follows the cursor">
+          <svg class="eyt-ball" viewBox="0 0 100 100" data-poke="true">
+            <defs>
+              <clipPath id="${clipId}">
+                <path d="${cubeShape}" />
+              </clipPath>
+            </defs>
+            <path class="eyt-body" d="${cubeShape}" />
+            <g clip-path="url(#${clipId})">
+              <g class="eyt-g-eye-0">
+                <rect class="eyt-eye" x="${-eye.w / 2}" y="${-eye.h / 2}" width="${eye.w}" height="${eye.h}" rx="${eye.r}" />
+              </g>
+              <g class="eyt-g-eye-1">
+                <rect class="eyt-eye" x="${-eye.w / 2}" y="${-eye.h / 2}" width="${eye.w}" height="${eye.h}" rx="${eye.r}" />
+              </g>
+            </g>
+          </svg>
+          <span class="eyt-say">
+            <span class="eyt-say-text"></span>
+            <span class="eyt-caret"></span>
+          </span>
+        </div>
+      `;
+
+      const ballEl = container.querySelector('.eyt-ball');
+      const eyeG0 = container.querySelector('.eyt-g-eye-0');
+      const eyeG1 = container.querySelector('.eyt-g-eye-1');
+      const eyesG = [eyeG0, eyeG1];
+      const sayEl = container.querySelector('.eyt-say');
+      const sayText = container.querySelector('.eyt-say-text');
+
+      let turn = 0;
+      let lastLine = -1;
+
+      // Poke chat bubble logic
+      async function poke() {
+        const mine = ++turn;
+        const pool = LINES.map((_, i) => i).filter(i => i !== lastLine);
+        const i = pool[Math.floor(Math.random() * pool.length)];
+        lastLine = i;
+        const line = LINES[i];
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+        const tint = TINTS[Math.floor(Math.random() * TINTS.length)];
+        sayEl.style.setProperty('--tint', tint);
+        sayText.textContent = "";
+        sayEl.setAttribute('data-on', 'true');
+
+        for (let k = 1; k <= line.length; k++) {
+          await wait(KEY_MS + Math.random() * 25);
+          if (mine !== turn) return;
+          sayText.textContent = line.slice(0, k);
+        }
+        await wait(HOLD_MS);
+        if (mine !== turn) return;
+        sayEl.removeAttribute('data-on');
+      }
+
+      ballEl.addEventListener('click', poke);
+
+      // Eye movement loop with spring physics
+      const t = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 };
+      let raf = 0;
+      let prev = 0;
+      let blink = 0;
+      let nextBlink = performance.now() + 2000;
+
+      function draw(now) {
+        let lid = 1;
+        if (now > nextBlink) {
+          blink = now;
+          nextBlink = now + 2600 + Math.random() * 3200;
+        }
+        const since = now - blink;
+        if (since < 160) lid = 1 - 0.9 * Math.sin((since / 160) * Math.PI);
+
+        const as = v => Math.asin(clamp(v, -0.92, 0.92));
+        const yaw = as(t.x);
+        const pitch = -as(t.y);
+        const cy = Math.cos(yaw), sy = Math.sin(yaw);
+        const cp = Math.cos(pitch), sp = Math.sin(pitch);
+        const tilt = TILT * t.x * t.y;
+        const g0 = GAP * Math.max(1, eyeScale * 0.8);
+
+        [-g0, g0].forEach((x0, idx) => {
+          const g = eyesG[idx];
+          if (!g) return;
+          const z0 = Math.sqrt(1 - x0 * x0);
+          const x1 = x0 * cy + z0 * sy;
+          const z1 = -x0 * sy + z0 * cy;
+          const y2 = -z1 * sp;
+          const z2 = z1 * cp;
+          const near = clamp(z2, 0, 1);
+          const k = 0.45 + 0.55 * near;
+          const sx = k * (0.7 + 0.3 * near);
+          const w = eye.w * sx;
+          const h = Math.max(0.6, eye.h * k * lid);
+          const rect = g.firstElementChild;
+          if (rect) {
+            rect.setAttribute("x", (-w / 2).toFixed(2));
+            rect.setAttribute("y", (-h / 2).toFixed(2));
+            rect.setAttribute("width", w.toFixed(2));
+            rect.setAttribute("height", h.toFixed(2));
+            rect.setAttribute("rx", Math.min(eye.r, w / 2, h / 2).toFixed(2));
+          }
+          g.setAttribute(
+            "transform",
+            `translate(${(50 + x1 * R).toFixed(2)} ${(50 + y2 * R).toFixed(2)}) rotate(${tilt.toFixed(2)})`
+          );
+          g.style.opacity = z2 < 0.05 ? "0" : "1";
+        });
+      }
+
+      function tick(now) {
+        if (document.hidden) { raf = 0; prev = 0; return; }
+        const dt = prev ? Math.min(2.5, (now - prev) / 16.67) : 1;
+        prev = now;
+
+        const k = 0.06;
+        const d = 0.34 - (clamp(bounce, 0, 100) / 100) * 0.22;
+        t.vx += ((t.tx - t.x) * k - t.vx * d) * dt;
+        t.vy += ((t.ty - t.y) * k - t.vy * d) * dt;
+        t.x += t.vx * dt;
+        t.y += t.vy * dt;
+
+        draw(now);
+        raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+
+      function aim(e) {
+        const r = container.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top + r.height / 2);
+        const d = Math.hypot(dx, dy) || 1;
+        const reach = Math.max(80, window.innerWidth * 0.25);
+        const far = Math.min(0.85, Math.tanh(d / reach) * (clamp(follow, 0, 100) / 100) * 1.5);
+        t.tx = (dx / d) * far;
+        t.ty = (dy / d) * far;
+      }
+
+      function rest() {
+        t.tx = 0;
+        t.ty = 0;
+      }
+
+      window.addEventListener("pointermove", aim, { passive: true });
+      document.documentElement.addEventListener("pointerleave", rest);
+    })();
+  </script>
+</body>
+</html>
