@@ -192,7 +192,7 @@
       transition: all 0.35s var(--ease-spring);
     }
 
-    /* Fluid Liquid Waterdrop Indicator Behind Selected Dock Option */
+    /* Refined Organic Liquid Waterdrop Indicator: Subtle 6% stretch, zero cartoon distortion */
     .dock-fluid-indicator {
       position: absolute;
       width: 44px;
@@ -206,12 +206,12 @@
       transform: translate3d(0, 0, 0);
       will-change: top, left, transform, border-radius;
       transition: 
-        top 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
-        left 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
-        transform 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
-        border-radius 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
-        background-color 0.4s ease,
-        box-shadow 0.4s ease;
+        top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.35s ease,
+        box-shadow 0.35s ease;
     }
 
     [data-theme="dark"] .dock-fluid-indicator {
@@ -219,25 +219,25 @@
       box-shadow: 0 8px 26px rgba(223, 162, 108, 0.52), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;
     }
 
-    /* Waterdrop Fluid Stretch Morphing States */
+    /* Subtle Liquid Stretch (Apple-grade fluid physics: 6% vertical / 3% horizontal) */
     .dock-fluid-indicator.waterdrop-down {
-      transform: scale(0.84, 1.32);
-      border-radius: 40% 40% 60% 60% / 30% 30% 70% 70%;
+      transform: scale(0.96, 1.07);
+      border-radius: 48% 48% 52% 52% / 46% 46% 54% 54%;
     }
 
     .dock-fluid-indicator.waterdrop-up {
-      transform: scale(0.84, 1.32);
-      border-radius: 60% 60% 40% 40% / 70% 70% 30% 30%;
+      transform: scale(0.96, 1.07);
+      border-radius: 52% 52% 48% 48% / 54% 54% 46% 46%;
     }
 
     .dock-fluid-indicator.waterdrop-right {
-      transform: scale(1.32, 0.84);
-      border-radius: 40% 60% 60% 40% / 30% 70% 70% 30%;
+      transform: scale(1.07, 0.96);
+      border-radius: 48% 52% 52% 48% / 46% 54% 54% 46%;
     }
 
     .dock-fluid-indicator.waterdrop-left {
-      transform: scale(1.32, 0.84);
-      border-radius: 60% 40% 40% 60% / 70% 30% 30% 70%;
+      transform: scale(1.07, 0.96);
+      border-radius: 52% 48% 48% 52% / 54% 46% 46% 54%;
     }
 
     .dock-btn {
@@ -3232,6 +3232,9 @@
 
     // Fluid Waterdrop Indicator System for Left Dock
     const dockIndicator = document.getElementById('dockFluidIndicator');
+    let waterdropTimer = null;
+    let isProgrammaticScroll = false;
+    let programmaticScrollTimer = null;
 
     function updateDockFluidIndicator(targetBtn, animateWaterdrop = true) {
       if (!dockIndicator || !targetBtn) return;
@@ -3244,21 +3247,24 @@
       const dy = newTop - prevTop;
       const dx = newLeft - prevLeft;
 
-      if (animateWaterdrop && (Math.abs(dy) > 8 || Math.abs(dx) > 8)) {
+      if (animateWaterdrop && (Math.abs(dy) > 4 || Math.abs(dx) > 4)) {
+        clearTimeout(waterdropTimer);
         dockIndicator.classList.remove('waterdrop-down', 'waterdrop-up', 'waterdrop-right', 'waterdrop-left');
-        void dockIndicator.offsetWidth; // Force reflow to re-trigger droplet morph
         
-        if (Math.abs(dy) >= Math.abs(dx)) {
-          if (dy > 0) dockIndicator.classList.add('waterdrop-down');
-          else dockIndicator.classList.add('waterdrop-up');
-        } else {
-          if (dx > 0) dockIndicator.classList.add('waterdrop-right');
-          else dockIndicator.classList.add('waterdrop-left');
-        }
-        
-        setTimeout(() => {
-          dockIndicator.classList.remove('waterdrop-down', 'waterdrop-up', 'waterdrop-right', 'waterdrop-left');
-        }, 420);
+        // Single rAF for silky smooth morph without layout thrashing
+        requestAnimationFrame(() => {
+          if (Math.abs(dy) >= Math.abs(dx)) {
+            if (dy > 0) dockIndicator.classList.add('waterdrop-down');
+            else dockIndicator.classList.add('waterdrop-up');
+          } else {
+            if (dx > 0) dockIndicator.classList.add('waterdrop-right');
+            else dockIndicator.classList.add('waterdrop-left');
+          }
+          
+          waterdropTimer = setTimeout(() => {
+            dockIndicator.classList.remove('waterdrop-down', 'waterdrop-up', 'waterdrop-right', 'waterdrop-left');
+          }, 360);
+        });
       }
 
       dockIndicator.style.top = `${newTop}px`;
@@ -3300,6 +3306,13 @@
     const dockLinks = document.querySelectorAll('.dock-btn');
     dockLinks.forEach(link => {
       link.addEventListener('click', (e) => {
+        // Lock scroll-spy from jumping between intermediate items during navigation
+        isProgrammaticScroll = true;
+        clearTimeout(programmaticScrollTimer);
+        programmaticScrollTimer = setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 900);
+
         setDockActive(link, true);
         const href = link.getAttribute('href');
         if (href && href !== '#hero') {
@@ -3321,6 +3334,8 @@
     const sections = document.querySelectorAll('section');
 
     window.addEventListener('scroll', () => {
+      if (isProgrammaticScroll) return; // Prevent intermediate hopping when skipping 1-2 options
+
       let currentSectionId = '';
       sections.forEach(sec => {
         const top = sec.offsetTop - 220;
