@@ -192,6 +192,54 @@
       transition: all 0.35s var(--ease-spring);
     }
 
+    /* Fluid Liquid Waterdrop Indicator Behind Selected Dock Option */
+    .dock-fluid-indicator {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--dark-pill);
+      box-shadow: 0 8px 24px rgba(26, 24, 48, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+      pointer-events: none;
+      z-index: 1;
+      transform-origin: center center;
+      transform: translate3d(0, 0, 0);
+      will-change: top, left, transform, border-radius;
+      transition: 
+        top 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
+        left 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
+        transform 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
+        border-radius 0.48s cubic-bezier(0.34, 1.48, 0.64, 1),
+        background-color 0.4s ease,
+        box-shadow 0.4s ease;
+    }
+
+    [data-theme="dark"] .dock-fluid-indicator {
+      background: var(--warm-accent);
+      box-shadow: 0 8px 26px rgba(223, 162, 108, 0.52), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    }
+
+    /* Waterdrop Fluid Stretch Morphing States */
+    .dock-fluid-indicator.waterdrop-down {
+      transform: scale(0.84, 1.32);
+      border-radius: 40% 40% 60% 60% / 30% 30% 70% 70%;
+    }
+
+    .dock-fluid-indicator.waterdrop-up {
+      transform: scale(0.84, 1.32);
+      border-radius: 60% 60% 40% 40% / 70% 70% 30% 30%;
+    }
+
+    .dock-fluid-indicator.waterdrop-right {
+      transform: scale(1.32, 0.84);
+      border-radius: 40% 60% 60% 40% / 30% 70% 70% 30%;
+    }
+
+    .dock-fluid-indicator.waterdrop-left {
+      transform: scale(1.32, 0.84);
+      border-radius: 60% 40% 40% 60% / 70% 30% 30% 70%;
+    }
+
     .dock-btn {
       width: 44px;
       height: 44px;
@@ -204,18 +252,17 @@
       cursor: pointer;
       color: var(--text-muted);
       position: relative;
+      z-index: 2; /* Sits directly above moving fluid indicator */
       transition: 
         transform 0.28s var(--ease-bounce),
         background-color 0.2s ease,
-        color 0.2s ease,
-        box-shadow 0.25s ease;
+        color 0.25s ease;
       text-decoration: none;
     }
 
     .dock-btn:hover {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.85);
-      transform: scale(1.18);
+      transform: scale(1.16);
     }
 
     .dock-btn:active {
@@ -223,15 +270,15 @@
     }
 
     .dock-btn.active {
-      background: var(--dark-pill);
-      color: #ffffff;
-      box-shadow: 0 8px 18px rgba(38, 36, 66, 0.32);
+      color: #ffffff !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
 
     [data-theme="dark"] .dock-btn.active {
-      background: var(--warm-accent);
-      color: #0b0c16;
-      box-shadow: 0 8px 22px rgba(223, 162, 108, 0.4);
+      color: #0b0c16 !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
 
     .dock-divider {
@@ -1953,6 +2000,8 @@
     ::view-transition-new(root) {
       animation: none;
       mix-blend-mode: normal;
+      height: 100%;
+      overflow: clip;
     }
 
     ::view-transition-old(root) {
@@ -1975,12 +2024,12 @@
       border: none;
       cursor: pointer;
       color: var(--text-muted);
-      transition: transform 0.28s var(--ease-bounce);
-      overflow: hidden;
+      transition: transform 0.3s var(--ease-bounce);
+      overflow: visible;
     }
 
     .animated-theme-toggler-btn:hover {
-      transform: scale(1.15);
+      transform: scale(1.18);
       color: var(--text-main);
     }
 
@@ -1988,9 +2037,28 @@
       transform: scale(0.92);
     }
 
-    .theme-icon-sun, .theme-icon-moon {
-      transition: transform 0.4s var(--ease-spring), opacity 0.3s ease;
+    /* Buttery Ripple Effect on Theme Toggle */
+    .animated-theme-toggler-btn::after {
+      content: '';
       position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      border: 2px solid var(--warm-accent);
+      opacity: 0;
+      transform: scale(0.7);
+      pointer-events: none;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+    }
+
+    .animated-theme-toggler-btn.rippling::after {
+      opacity: 0.9;
+      transform: scale(1.45);
+    }
+
+    .theme-icon-sun, .theme-icon-moon {
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease, color 0.35s ease;
+      position: absolute;
+      transform-origin: center center;
     }
 
     [data-theme="dark"] .theme-icon-sun {
@@ -2030,6 +2098,9 @@
 
     <!-- Floating Capsule Dock (Left Sidebar inspired by image) -->
     <nav class="floating-sidebar-dock" aria-label="Main Navigation">
+      <!-- Fluid Waterdrop Background Indicator -->
+      <div class="dock-fluid-indicator" id="dockFluidIndicator"></div>
+
       <a href="#hero" class="dock-btn active" title="Home">
         <i data-lucide="home" style="width:20px;height:20px;"></i>
         <span class="dock-tooltip">Overview</span>
@@ -2881,10 +2952,17 @@
       const isCurrentlyDark = document.body.getAttribute('data-theme') === 'dark';
       const newTheme = isCurrentlyDark ? 'light' : 'dark';
 
+      // Buttery ripple effect on button
+      const btn = e.currentTarget || document.getElementById('themeToggleBtn');
+      if (btn) {
+        btn.classList.add('rippling');
+        setTimeout(() => btn.classList.remove('rippling'), 600);
+      }
+
       if (typeof document !== 'undefined' && 'startViewTransition' in document) {
         const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
-        const x = e.clientX || rect.left + rect.width / 2;
-        const y = e.clientY || rect.top + rect.height / 2;
+        const x = e.clientX || (rect.left + rect.width / 2);
+        const y = e.clientY || (rect.top + rect.height / 2);
 
         const endRadius = Math.hypot(
           Math.max(x, window.innerWidth - x),
@@ -2905,8 +2983,8 @@
               ]
             },
             {
-              duration: 950,
-              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              duration: 750,
+              easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)',
               pseudoElement: '::view-transition-new(root)'
             }
           );
@@ -3152,10 +3230,77 @@
       }
     }, { passive: true });
 
+    // Fluid Waterdrop Indicator System for Left Dock
+    const dockIndicator = document.getElementById('dockFluidIndicator');
+
+    function updateDockFluidIndicator(targetBtn, animateWaterdrop = true) {
+      if (!dockIndicator || !targetBtn) return;
+
+      const newTop = targetBtn.offsetTop;
+      const newLeft = targetBtn.offsetLeft;
+      
+      const prevTop = parseFloat(dockIndicator.dataset.top !== undefined ? dockIndicator.dataset.top : newTop);
+      const prevLeft = parseFloat(dockIndicator.dataset.left !== undefined ? dockIndicator.dataset.left : newLeft);
+      const dy = newTop - prevTop;
+      const dx = newLeft - prevLeft;
+
+      if (animateWaterdrop && (Math.abs(dy) > 8 || Math.abs(dx) > 8)) {
+        dockIndicator.classList.remove('waterdrop-down', 'waterdrop-up', 'waterdrop-right', 'waterdrop-left');
+        void dockIndicator.offsetWidth; // Force reflow to re-trigger droplet morph
+        
+        if (Math.abs(dy) >= Math.abs(dx)) {
+          if (dy > 0) dockIndicator.classList.add('waterdrop-down');
+          else dockIndicator.classList.add('waterdrop-up');
+        } else {
+          if (dx > 0) dockIndicator.classList.add('waterdrop-right');
+          else dockIndicator.classList.add('waterdrop-left');
+        }
+        
+        setTimeout(() => {
+          dockIndicator.classList.remove('waterdrop-down', 'waterdrop-up', 'waterdrop-right', 'waterdrop-left');
+        }, 420);
+      }
+
+      dockIndicator.style.top = `${newTop}px`;
+      dockIndicator.style.left = `${newLeft}px`;
+      dockIndicator.style.width = `${targetBtn.offsetWidth}px`;
+      dockIndicator.style.height = `${targetBtn.offsetHeight}px`;
+      dockIndicator.dataset.top = newTop;
+      dockIndicator.dataset.left = newLeft;
+    }
+
+    function setDockActive(targetBtn, animateWaterdrop = true) {
+      if (!targetBtn) return;
+      const allDockButtons = document.querySelectorAll('.floating-sidebar-dock .dock-btn');
+      allDockButtons.forEach(b => {
+        if (b === targetBtn) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      updateDockFluidIndicator(targetBtn, animateWaterdrop);
+    }
+
+    // Initialize fluid indicator on initial active button
+    const initialActiveDock = document.querySelector('.floating-sidebar-dock .dock-btn.active') || document.querySelector('.floating-sidebar-dock .dock-btn');
+    if (initialActiveDock) {
+      updateDockFluidIndicator(initialActiveDock, false);
+    }
+    window.addEventListener('load', () => {
+      const active = document.querySelector('.floating-sidebar-dock .dock-btn.active');
+      if (active) updateDockFluidIndicator(active, false);
+    });
+    window.addEventListener('resize', () => {
+      const active = document.querySelector('.floating-sidebar-dock .dock-btn.active');
+      if (active) updateDockFluidIndicator(active, false);
+    });
+
     // Smooth Left Navbar Click: Immediately hide top navbar with Apple animation unless returning to hero
     const dockLinks = document.querySelectorAll('.dock-btn');
     dockLinks.forEach(link => {
       link.addEventListener('click', (e) => {
+        setDockActive(link, true);
         const href = link.getAttribute('href');
         if (href && href !== '#hero') {
           topBar.classList.add('nav-hidden');
@@ -3172,7 +3317,7 @@
       });
     });
 
-    // Highlight active dock icon on scroll
+    // Highlight active dock icon on scroll with fluid indicator movement
     const sections = document.querySelectorAll('section');
 
     window.addEventListener('scroll', () => {
@@ -3184,12 +3329,12 @@
         }
       });
 
-      dockLinks.forEach(link => {
-        if (link.getAttribute('href') === `#${currentSectionId}`) {
-          dockLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
+      if (currentSectionId) {
+        const matchingLink = Array.from(dockLinks).find(l => l.getAttribute('href') === `#${currentSectionId}`);
+        if (matchingLink && !matchingLink.classList.contains('active')) {
+          setDockActive(matchingLink, true);
         }
-      });
+      }
     }, { passive: true });
 
     // SmoothUI Scroll Reveal System (IntersectionObserver)
